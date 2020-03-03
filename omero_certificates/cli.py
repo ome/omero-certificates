@@ -30,7 +30,4 @@ class CertificatesControl(BaseControl):
         loglevel = max(DEFAULT_LOGLEVEL - 10 * args.verbose, 10)
         logging.getLogger("omero_certificates").setLevel(level=loglevel)
         omerodir = _omerodir(self.ctx)
-        # try:
         create_certificates(omerodir)
-        # except Exception as e:
-        #     self.ctx.die(100, e)

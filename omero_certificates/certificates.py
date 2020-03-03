@@ -49,7 +49,7 @@ def update_config(omerodir):
 
 def run_openssl(args):
     command = ["openssl"] + args
-    log.info("Executing : %s", " ".join(command))
+    log.info("Executing: %s", " ".join(command))
     subprocess.run(command)
 
 
