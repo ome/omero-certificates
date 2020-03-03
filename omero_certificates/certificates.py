@@ -40,7 +40,10 @@ def update_config(omerodir):
     set_if_empty("omero.glacier2.IceSSL.CertFile", "server.p12")
     set_if_empty("omero.glacier2.IceSSL.CAs", "server.pem")
     set_if_empty("omero.glacier2.IceSSL.Password", "secret")
+
     set_if_empty("omero.glacier2.IceSSL.Ciphers", "HIGH")
+    set_if_empty("omero.glacier2.IceSSL.ProtocolVersionMax", "TLS1_2")
+    set_if_empty("omero.glacier2.IceSSL.Protocols", "TLS1_0,TLS1_1,TLS1_2")
 
     cfgdict = cfg.as_map()
     cfg.close()
