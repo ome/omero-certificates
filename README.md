@@ -23,6 +23,7 @@ omero certificates
 ```
 to update your OMERO.server configuration and to generate or update your self-signed certificates.
 If you already have the necessary configuration settings this plugin will not modify them, so it is safe to always run `omero certificates` every time you start OMERO.server.
+You can now start your omero server as normal.
 
 This plugin automatically sets `omero.glacier2.IceSSL.Ciphers` to `HIGH` since the default weaker ciphers may not be supported on some systems.
 To revert to the default behaviour set it to `ADH:HIGH`.
