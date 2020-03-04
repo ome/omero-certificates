@@ -31,3 +31,10 @@ This plugin automatically overrides the defaults for the following properties if
 - `omero.glacier2.IceSSL.Protocols=TLS1_0,TLS1_1,TLS1_2`: Support TLS 1.1 and 1.2, not just 1.0
 
 The original values can be found on https://docs.openmicroscopy.org/omero/5.6.0/sysadmins/config.html#glacier2
+
+If you see a warning message such as
+```
+Can't load ./.rnd into RNG
+```
+it should be safe to ignore.
+Check that you have a `*.p12` certificate, if you are using the default OMERO confioguration this will be in `/OMERO/certs/server.p12`.
