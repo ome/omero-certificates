@@ -3,6 +3,10 @@
 
 Generate self-signed certificates and configure OMERO.server.
 
+If you prefer to configure OMERO manually see the examples in these documents:
+- https://github.com/ome/docker-example-omero-websockets
+- https://docs.openmicroscopy.org/omero/5.6.0/sysadmins/client-server-ssl.html
+
 
 ## Installation
 
@@ -20,6 +24,14 @@ Set the `OMERODIR` environment variable to the location of OMERO.server.
 Run:
 ```
 omero certificates
+```
+```
+OpenSSL 1.1.1d  10 Sep 2019
+Generating RSA private key, 2048 bit long modulus (2 primes)
+.+++++
+.............................+++++
+e is 65537 (0x010001)
+certificates created: /OMERO/certs/server.key /OMERO/certs/server.pem /OMERO/certs/server.p12
 ```
 to update your OMERO.server configuration and to generate or update your self-signed certificates.
 If you already have the necessary configuration settings this plugin will not modify them, so it is safe to always run `omero certificates` every time you start OMERO.server.
