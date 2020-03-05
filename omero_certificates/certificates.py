@@ -60,7 +60,7 @@ def create_certificates(omerodir):
     cfgmap = update_config(omerodir)
     if not cfgmap:
         log.warning("setup.omero.certificates is disabled, not doing anything")
-        return
+        return "certificates plugin disabled"
 
     certdir = cfgmap["omero.glacier2.IceSSL.DefaultDir"]
 
@@ -80,6 +80,7 @@ def create_certificates(omerodir):
         raise
 
     os.makedirs(certdir, exist_ok=True)
+    created_files = []
 
     # Private key
     if os.path.exists(keypath):
@@ -87,6 +88,8 @@ def create_certificates(omerodir):
     else:
         log.info("Creating self-signed CA key: %s", keypath)
         run_openssl(["genrsa", "-out", keypath, "2048"])
+        created_files.append(keypath)
+
     # Self-signed certificate
     log.info("Creating self-signed certificate: %s", certpath)
     run_openssl(
@@ -106,6 +109,8 @@ def create_certificates(omerodir):
             "v3_ca",
         ]
     )
+    created_files.append(certpath)
+
     # PKCS12 format
     log.info("Creating PKCS12 bundle: %s", pkcs12path)
     run_openssl(
@@ -124,3 +129,6 @@ def create_certificates(omerodir):
             "pass:{}".format(password),
         ]
     )
+    created_files.append(pkcs12path)
+
+    return "certificates created: " + " ".join(created_files)

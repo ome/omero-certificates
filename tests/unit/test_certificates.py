@@ -68,7 +68,8 @@ class TestCertificates(object):
         configxml["omero.data.dir"] = datadir
         configxml.close()
 
-        create_certificates(omerodir)
+        m = create_certificates(omerodir)
+        assert m.startswith("certificates created: ")
 
         cfg = get_config(omerodir)
         assert cfg["omero.glacier2.IceSSL.DefaultDir"] == os.path.join(datadir, "certs")
