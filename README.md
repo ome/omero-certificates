@@ -1,5 +1,5 @@
 # OMERO server certificate management plugin
-[![Build Status](https://travis-ci.com/manics/omero-cli-certificates.svg?branch=master)](https://travis-ci.com/manics/omero-cli-certificates)
+[![Build Status](https://travis-ci.org/ome/omero-cli-certificates.svg?branch=master)](https://travis-ci.org/ome/omero-cli-certificates)
 
 Generate self-signed certificates and configure OMERO.server.
 
@@ -9,7 +9,7 @@ Generate self-signed certificates and configure OMERO.server.
 Install `openssl` if it's not already on your system.
 Then activate your OMERO.server virtualenv and run:
 ```
-pip install -U git+https://github.com/manics/omero-cli-certificates.git
+pip install omero-cli-certificates
 ```
 
 
