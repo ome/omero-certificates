@@ -25,18 +25,18 @@ def update_config(omerodir):
             cfg[cfgkey] = default
             log.info("Setting %s=%s", cfgkey, default)
 
-    setup = cfgdict.get("setup.omero.certificates")
+    setup = cfgdict.get("omero.certificates.setup")
     if setup and setup.lower() != "true":
         return
 
-    set_if_empty("setup.omero.certificates", "true")
+    set_if_empty("omero.certificates.setup", "true")
     set_if_empty(
         "omero.glacier2.IceSSL.DefaultDir",
         os.path.join(cfgdict.get("omero.data.dir", "/OMERO"), "certs"),
     )
-    set_if_empty("ssl.certificate.commonname", "localhost")
-    set_if_empty("ssl.certificate.owner", "/L=OMERO/O=OMERO.server")
-    set_if_empty("ssl.certificate.key", "server.key")
+    set_if_empty("omero.certificates.commonname", "localhost")
+    set_if_empty("omero.certificates.owner", "/L=OMERO/O=OMERO.server")
+    set_if_empty("omero.certificates.key", "server.key")
     set_if_empty("omero.glacier2.IceSSL.CertFile", "server.p12")
     set_if_empty("omero.glacier2.IceSSL.CAs", "server.pem")
     set_if_empty("omero.glacier2.IceSSL.Password", "secret")
@@ -59,16 +59,16 @@ def run_openssl(args):
 def create_certificates(omerodir):
     cfgmap = update_config(omerodir)
     if not cfgmap:
-        log.warning("setup.omero.certificates is disabled, not doing anything")
+        log.warning("omero.certificates.setup is disabled, not doing anything")
         return "certificates plugin disabled"
 
     certdir = cfgmap["omero.glacier2.IceSSL.DefaultDir"]
 
-    cn = cfgmap["ssl.certificate.commonname"]
-    owner = cfgmap["ssl.certificate.owner"]
+    cn = cfgmap["omero.certificates.commonname"]
+    owner = cfgmap["omero.certificates.owner"]
     days = "365"
     pkcs12path = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CertFile"])
-    keypath = os.path.join(certdir, cfgmap["ssl.certificate.key"])
+    keypath = os.path.join(certdir, cfgmap["omero.certificates.key"])
     certpath = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CAs"])
     password = cfgmap["omero.glacier2.IceSSL.Password"]
 
