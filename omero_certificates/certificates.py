@@ -25,11 +25,6 @@ def update_config(omerodir):
             cfg[cfgkey] = default
             log.info("Setting %s=%s", cfgkey, default)
 
-    setup = cfgdict.get("omero.certificates.setup")
-    if setup and setup.lower() != "true":
-        return
-
-    set_if_empty("omero.certificates.setup", "true")
     set_if_empty(
         "omero.glacier2.IceSSL.DefaultDir",
         os.path.join(cfgdict.get("omero.data.dir", "/OMERO"), "certs"),
@@ -58,10 +53,6 @@ def run_openssl(args):
 
 def create_certificates(omerodir):
     cfgmap = update_config(omerodir)
-    if not cfgmap:
-        log.warning("omero.certificates.setup is disabled, not doing anything")
-        return "certificates plugin disabled"
-
     certdir = cfgmap["omero.glacier2.IceSSL.DefaultDir"]
 
     cn = cfgmap["omero.certificates.commonname"]
