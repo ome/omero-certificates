@@ -29,18 +29,17 @@ class TestCertificates(object):
             "omero.glacier2.IceSSL.Password": "secret",
             "omero.glacier2.IceSSL.ProtocolVersionMax": "TLS1_2",
             "omero.glacier2.IceSSL.Protocols": "TLS1_0,TLS1_1,TLS1_2",
-            "setup.omero.certificates": "true",
-            "ssl.certificate.commonname": "localhost",
-            "ssl.certificate.key": "server.key",
-            "ssl.certificate.owner": "/L=OMERO/O=OMERO.server",
+            "omero.certificates.commonname": "localhost",
+            "omero.certificates.key": "server.key",
+            "omero.certificates.owner": "/L=OMERO/O=OMERO.server",
         }
 
     def test_config_keep_existing(self, tmpdir):
         (tmpdir / "etc" / "grid").ensure(dir=True)
         omerodir = str(tmpdir)
         configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
-        configxml["ssl.certificate.commonname"] = "omero.example.org"
-        configxml["ssl.certificate.owner"] = "/L=universe/O=42"
+        configxml["omero.certificates.commonname"] = "omero.example.org"
+        configxml["omero.certificates.owner"] = "/L=universe/O=42"
         configxml.close()
 
         update_config(omerodir)
@@ -54,10 +53,9 @@ class TestCertificates(object):
             "omero.glacier2.IceSSL.Password": "secret",
             "omero.glacier2.IceSSL.ProtocolVersionMax": "TLS1_2",
             "omero.glacier2.IceSSL.Protocols": "TLS1_0,TLS1_1,TLS1_2",
-            "setup.omero.certificates": "true",
-            "ssl.certificate.commonname": "omero.example.org",
-            "ssl.certificate.key": "server.key",
-            "ssl.certificate.owner": "/L=universe/O=42",
+            "omero.certificates.commonname": "omero.example.org",
+            "omero.certificates.key": "server.key",
+            "omero.certificates.owner": "/L=universe/O=42",
         }
 
     def test_create_certificates(self, tmpdir):
@@ -68,7 +66,8 @@ class TestCertificates(object):
         configxml["omero.data.dir"] = datadir
         configxml.close()
 
-        create_certificates(omerodir)
+        m = create_certificates(omerodir)
+        assert m.startswith("certificates created: ")
 
         cfg = get_config(omerodir)
         assert cfg["omero.glacier2.IceSSL.DefaultDir"] == os.path.join(datadir, "certs")

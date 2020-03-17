@@ -25,18 +25,13 @@ def update_config(omerodir):
             cfg[cfgkey] = default
             log.info("Setting %s=%s", cfgkey, default)
 
-    setup = cfgdict.get("setup.omero.certificates")
-    if setup and setup.lower() != "true":
-        return
-
-    set_if_empty("setup.omero.certificates", "true")
     set_if_empty(
         "omero.glacier2.IceSSL.DefaultDir",
         os.path.join(cfgdict.get("omero.data.dir", "/OMERO"), "certs"),
     )
-    set_if_empty("ssl.certificate.commonname", "localhost")
-    set_if_empty("ssl.certificate.owner", "/L=OMERO/O=OMERO.server")
-    set_if_empty("ssl.certificate.key", "server.key")
+    set_if_empty("omero.certificates.commonname", "localhost")
+    set_if_empty("omero.certificates.owner", "/L=OMERO/O=OMERO.server")
+    set_if_empty("omero.certificates.key", "server.key")
     set_if_empty("omero.glacier2.IceSSL.CertFile", "server.p12")
     set_if_empty("omero.glacier2.IceSSL.CAs", "server.pem")
     set_if_empty("omero.glacier2.IceSSL.Password", "secret")
@@ -58,17 +53,13 @@ def run_openssl(args):
 
 def create_certificates(omerodir):
     cfgmap = update_config(omerodir)
-    if not cfgmap:
-        log.warning("setup.omero.certificates is disabled, not doing anything")
-        return
-
     certdir = cfgmap["omero.glacier2.IceSSL.DefaultDir"]
 
-    cn = cfgmap["ssl.certificate.commonname"]
-    owner = cfgmap["ssl.certificate.owner"]
+    cn = cfgmap["omero.certificates.commonname"]
+    owner = cfgmap["omero.certificates.owner"]
     days = "365"
     pkcs12path = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CertFile"])
-    keypath = os.path.join(certdir, cfgmap["ssl.certificate.key"])
+    keypath = os.path.join(certdir, cfgmap["omero.certificates.key"])
     certpath = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CAs"])
     password = cfgmap["omero.glacier2.IceSSL.Password"]
 
@@ -80,6 +71,7 @@ def create_certificates(omerodir):
         raise
 
     os.makedirs(certdir, exist_ok=True)
+    created_files = []
 
     # Private key
     if os.path.exists(keypath):
@@ -87,6 +79,8 @@ def create_certificates(omerodir):
     else:
         log.info("Creating self-signed CA key: %s", keypath)
         run_openssl(["genrsa", "-out", keypath, "2048"])
+        created_files.append(keypath)
+
     # Self-signed certificate
     log.info("Creating self-signed certificate: %s", certpath)
     run_openssl(
@@ -106,6 +100,8 @@ def create_certificates(omerodir):
             "v3_ca",
         ]
     )
+    created_files.append(certpath)
+
     # PKCS12 format
     log.info("Creating PKCS12 bundle: %s", pkcs12path)
     run_openssl(
@@ -124,3 +120,6 @@ def create_certificates(omerodir):
             "pass:{}".format(password),
         ]
     )
+    created_files.append(pkcs12path)
+
+    return "certificates created: " + " ".join(created_files)
