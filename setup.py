@@ -9,13 +9,13 @@ import setuptools
 
 setuptools.setup(
     name="omero-certificates",
-    author="Simon Li",
-    author_email="spli@dundee.ac.uk",
+    author="The Open Microscopy Team",
+    author_email="ome-devel@lists.openmicroscopy.org.uk",
     description="OMERO server certificate management plugin",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     license="GPLv2",
-    url="https://github.com/manics/omero-cli-certificates",
+    url="https://github.com/ome/omero-certificates",
     packages=["omero_certificates", "omero.plugins"],
     setup_requires=["setuptools_scm"],
     install_requires=["omero-py>=5.6.0"],
