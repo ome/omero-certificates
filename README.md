@@ -1,5 +1,5 @@
 # OMERO server certificate management plugin
-[![Build Status](https://travis-ci.org/ome/omero-certificates.svg?branch=master)](https://travis-ci.org/ome/omero-certificates)
+[![Actions Status](https://github.com/ome/omero-certificates/workflows/Tox/badge.svg)](https://github.com/ome/omero-certificates/actions)
 
 Generate self-signed certificates and configure OMERO.server.
 
