@@ -1,11 +1,11 @@
 # OMERO server certificate management plugin
-[![Build Status](https://travis-ci.org/ome/omero-certificates.svg?branch=master)](https://travis-ci.org/ome/omero-certificates)
+[![Actions Status](https://github.com/ome/omero-certificates/workflows/Tox/badge.svg)](https://github.com/ome/omero-certificates/actions)
 
 Generate self-signed certificates and configure OMERO.server.
 
 If you prefer to configure OMERO manually see the examples in these documents:
 - https://github.com/ome/docker-example-omero-websockets
-- https://docs.openmicroscopy.org/omero/5.6.0/sysadmins/client-server-ssl.html
+- https://docs.openmicroscopy.org/omero/latest/sysadmins/client-server-ssl.html
 
 
 ## Installation
