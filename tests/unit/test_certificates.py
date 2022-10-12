@@ -1,6 +1,12 @@
 import os
-import subprocess
 
+from cryptography import x509
+from cryptography.hazmat.primitives.asymmetric.rsa import RSAPrivateKey
+from cryptography.hazmat.primitives.serialization.pkcs12 import (
+    PKCS12Certificate,
+    load_pkcs12,
+)
+from cryptography.x509.oid import NameOID
 from omero.config import ConfigXml
 from omero_certificates.certificates import create_certificates, update_config
 
@@ -75,25 +81,22 @@ class TestCertificates(object):
         for filename in ("server.key", "server.p12", "server.pem"):
             assert os.path.isfile(os.path.join(datadir, "certs", filename))
 
-        out = subprocess.check_output(
-            [
-                "openssl",
-                "pkcs12",
-                "-in",
-                os.path.join(datadir, "certs", "server.p12"),
-                "-passin",
-                "pass:secret",
-                "-passout",
-                "pass:secret",
-            ]
-        )
-        out = out.decode().splitlines()
-        for line in (
-            "subject=CN = localhost, O = OMERO.server, L = OMERO",
-            "issuer=CN = localhost, O = OMERO.server, L = OMERO",
-            "-----BEGIN CERTIFICATE-----",
-            "-----END CERTIFICATE-----",
-            "-----BEGIN ENCRYPTED PRIVATE KEY-----",
-            "-----END ENCRYPTED PRIVATE KEY-----",
-        ):
-            assert line in out
+        with open(os.path.join(datadir, "certs", "server.p12"), "rb") as f:
+            p12 = load_pkcs12(f.read(), b"secret")
+            assert p12.key
+            assert isinstance(p12.key, RSAPrivateKey)
+            assert p12.key.key_size == 2048
+
+            assert p12.cert
+            assert isinstance(p12.cert, PKCS12Certificate)
+            certificate = p12.cert.certificate
+            assert certificate
+            assert isinstance(certificate, x509.Certificate)
+            subject = certificate.subject
+            assert len(subject) == 3
+            (cn,) = subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+            assert cn.value == "localhost"
+            (l,) = subject.get_attributes_for_oid(NameOID.LOCALITY_NAME)
+            assert l.value == "OMERO"
+            (o,) = subject.get_attributes_for_oid(NameOID.ORGANIZATION_NAME)
+            assert o.value == "OMERO.server"
