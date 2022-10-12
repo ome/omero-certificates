@@ -10,12 +10,10 @@ If you prefer to configure OMERO manually see the examples in these documents:
 
 ## Installation
 
-Install `openssl` if it's not already on your system.
-Then activate your OMERO.server virtualenv and run:
+Activate your OMERO.server virtualenv and run:
 ```
 pip install omero-certificates
 ```
-
 
 ## Usage
 
@@ -26,11 +24,6 @@ Run:
 omero certificates
 ```
 ```
-OpenSSL 1.1.1d  10 Sep 2019
-Generating RSA private key, 2048 bit long modulus (2 primes)
-.+++++
-.............................+++++
-e is 65537 (0x010001)
 certificates created: /OMERO/certs/server.key /OMERO/certs/server.pem /OMERO/certs/server.p12
 ```
 to update your OMERO.server configuration and to generate or update your self-signed certificates.
@@ -46,12 +39,6 @@ The original values can be found on https://docs.openmicroscopy.org/omero/5.6.0/
 
 Certificates will be stored under `{omero.data.dir}/certs` by default.
 Set `omero.glacier2.IceSSL.DefaultDir` to change this.
-
-If you see a warning message such as
-```
-Can't load ./.rnd into RNG
-```
-it should be safe to ignore.
 
 For full information see the output of:
 ```
