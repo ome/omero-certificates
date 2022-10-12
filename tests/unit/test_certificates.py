@@ -31,7 +31,7 @@ class TestCertificates(object):
             "omero.glacier2.IceSSL.Protocols": "TLS1_0,TLS1_1,TLS1_2",
             "omero.certificates.commonname": "localhost",
             "omero.certificates.key": "server.key",
-            "omero.certificates.owner": "/L=OMERO/O=OMERO.server",
+            "omero.certificates.owner": "L=OMERO,O=OMERO.server",
         }
 
     def test_config_keep_existing(self, tmpdir):
@@ -89,8 +89,8 @@ class TestCertificates(object):
         )
         out = out.decode().splitlines()
         for line in (
-            "subject=L = OMERO, O = OMERO.server, CN = localhost",
-            "issuer=L = OMERO, O = OMERO.server, CN = localhost",
+            "subject=CN = localhost, O = OMERO.server, L = OMERO",
+            "issuer=CN = localhost, O = OMERO.server, L = OMERO",
             "-----BEGIN CERTIFICATE-----",
             "-----END CERTIFICATE-----",
             "-----BEGIN ENCRYPTED PRIVATE KEY-----",
