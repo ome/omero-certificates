@@ -18,7 +18,10 @@ setuptools.setup(
     url="https://github.com/ome/omero-certificates",
     packages=["omero_certificates", "omero.plugins"],
     setup_requires=["setuptools_scm"],
-    install_requires=["omero-py>=5.6.0"],
+    install_requires=[
+        "omero-py>=5.6.0",
+        "cryptography>=36.0.0",
+    ],
     use_scm_version={"write_to": "omero_certificates/_version.py"},
     classifiers=[
         "Environment :: Console",
