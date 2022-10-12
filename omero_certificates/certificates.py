@@ -7,6 +7,12 @@ Wrap openssl to manage self-signed certificates
 import logging
 import os
 import subprocess
+from cryptography.hazmat.primitives.asymmetric import rsa
+from cryptography.hazmat.primitives.serialization import (
+    Encoding,
+    NoEncryption,
+    PrivateFormat,
+)
 from omero.config import ConfigXml
 
 log = logging.getLogger(__name__)
@@ -78,7 +84,16 @@ def create_certificates(omerodir):
         log.info("Using existing key: %s", keypath)
     else:
         log.info("Creating self-signed CA key: %s", keypath)
-        run_openssl(["genrsa", "-out", keypath, "2048"])
+        # Do what `openssl genrsa -out <keypath> <numbits>` would do
+        rsa_private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+        with open(keypath, "wb") as pem_openssl_key:
+            pem_openssl_key.write(
+                rsa_private_key.private_bytes(
+                    Encoding.PEM,
+                    PrivateFormat.TraditionalOpenSSL,  # Essentially PKCS#1
+                    NoEncryption(),
+                )
+            )
         created_files.append(keypath)
 
     # Self-signed certificate
