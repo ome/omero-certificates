@@ -13,9 +13,11 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives.hashes import SHA256
 from cryptography.hazmat.primitives.serialization import (
+    BestAvailableEncryption,
     Encoding,
     NoEncryption,
     PrivateFormat,
+    pkcs12,
 )
 from omero.config import ConfigXml
 
@@ -126,22 +128,17 @@ def create_certificates(omerodir):
 
     # PKCS12 format
     log.info("Creating PKCS12 bundle: %s", pkcs12path)
-    run_openssl(
-        [
-            "pkcs12",
-            "-export",
-            "-out",
-            pkcs12path,
-            "-inkey",
-            keypath,
-            "-in",
-            certpath,
-            "-name",
-            "server",
-            "-password",
-            "pass:{}".format(password),
-        ]
-    )
+    # Do what `openssl pkcs12 ...` would do
+    with open(pkcs12path, "wb") as p12:
+        p12.write(
+            pkcs12.serialize_key_and_certificates(
+                b"server",
+                rsa_private_key,
+                cert,
+                None,
+                BestAvailableEncryption(password.encode("utf-8")),
+            )
+        )
     created_files.append(pkcs12path)
 
     return "certificates created: " + " ".join(created_files)
