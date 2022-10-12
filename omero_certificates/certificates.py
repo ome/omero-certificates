@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-Wrap openssl to manage self-signed certificates
+Wrap cryptography to manage self-signed certificates
 """
 
 import logging
 import os
-import subprocess
 from datetime import datetime, timedelta
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
@@ -57,12 +56,6 @@ def update_config(omerodir):
     return cfgdict
 
 
-def run_openssl(args):
-    command = ["openssl"] + args
-    log.info("Executing: %s", " ".join(command))
-    subprocess.run(command)
-
-
 def create_certificates(omerodir):
     cfgmap = update_config(omerodir)
     certdir = cfgmap["omero.glacier2.IceSSL.DefaultDir"]
@@ -74,13 +67,6 @@ def create_certificates(omerodir):
     keypath = os.path.join(certdir, cfgmap["omero.certificates.key"])
     certpath = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CAs"])
     password = cfgmap["omero.glacier2.IceSSL.Password"]
-
-    try:
-        run_openssl(["version"])
-    except subprocess.CalledProcessError as e:
-        msg = "openssl version failed, is it installed?"
-        log.fatal("%s: %s", msg, e)
-        raise
 
     os.makedirs(certdir, exist_ok=True)
     created_files = []
