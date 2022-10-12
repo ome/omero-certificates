@@ -45,6 +45,18 @@ For full information see the output of:
 omero certificates --help
 ```
 
+## Upgrading
+
+Since version 0.3.0 this plugin uses portable RFC 4514 (supercedes RFC 2253) formatted strings for the `omero.certificates.owner` configuration option.  If you have ran `omero certificates` before you may have OpenSSL command line formatted strings in your configuration that need to be updated before you can run `omero certificates` again.  In most cases this means taking a string such as `/L=OMERO/O=OMERO.server` and reformatting it to `L=OMERO,O=OMERO.server`; remove the leading `/` and replace separator `/`'s with `,`'s.
+
+You can see the RFC 4514 compatible string for the `Issuer` and `Subject` of your existing certificate by running:
+```
+openssl x509 -in /path/to/cert.pem -text -nameopt rfc2253
+```
+
+You can review the RFC in full for more specific details:
+- https://tools.ietf.org/html/rfc4514.html
+
 ## Developer notes
 
 This project uses [setuptools-scm](https://pypi.org/project/setuptools-scm/).

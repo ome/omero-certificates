@@ -97,7 +97,14 @@ def create_certificates(omerodir):
     log.info("Creating self-signed certificate: %s", certpath)
     # Do what `openssl req -x509 ...` would do
     utcnow = datetime.utcnow()
-    subject = issuer = x509.Name.from_rfc4514_string("{},CN={}".format(owner, cn))
+    try:
+        subject = issuer = x509.Name.from_rfc4514_string("{},CN={}".format(owner, cn))
+    except ValueError:
+        return (
+            f"'omero.certificates.owner' configuration setting '{owner}' not a "
+            "valid RFC 4514 string!  Are you upgrading?  See "
+            "https://pypi.org/project/omero-certificates/ for help."
+        )
     cert = (
         x509.CertificateBuilder()
         .subject_name(subject)
