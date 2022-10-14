@@ -6,6 +6,7 @@ Wrap cryptography to manage self-signed certificates
 
 import logging
 import os
+import re
 from datetime import datetime, timedelta
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
@@ -97,6 +98,12 @@ def create_certificates(omerodir):
     # Do what `openssl req -x509 ...` would do
     utcnow = datetime.utcnow()
     try:
+        if owner.startswith("/"):
+            log.warn(
+                f"'omero.certificates.owner' configuration setting '{owner}' not a "
+                "valid RFC 4514 string!  Attempting to convert."
+            )
+            owner = re.sub(r"\s*/\s*", r",", owner.lstrip("/"))
         subject = issuer = x509.Name.from_rfc4514_string("{},CN={}".format(owner, cn))
     except ValueError:
         return (
