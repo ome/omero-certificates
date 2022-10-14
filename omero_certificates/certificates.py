@@ -10,9 +10,8 @@ from datetime import datetime, timedelta
 from cryptography import x509
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
-from cryptography.hazmat.primitives.hashes import SHA256
+from cryptography.hazmat.primitives.hashes import SHA256, SHA1
 from cryptography.hazmat.primitives.serialization import (
-    BestAvailableEncryption,
     Encoding,
     NoEncryption,
     PrivateFormat,
@@ -123,13 +122,22 @@ def create_certificates(omerodir):
     log.info("Creating PKCS12 bundle: %s", pkcs12path)
     # Do what `openssl pkcs12 ...` would do
     with open(pkcs12path, "wb") as p12:
+        # Maintain compatibility with OpenSSL < 3.0.0, the macOS security
+        # framework and Windows.
+        encryption = (
+            PrivateFormat.PKCS12.encryption_builder()
+            .kdf_rounds(50000)
+            .key_cert_algorithm(pkcs12.PBES.PBESv1SHA1And3KeyTripleDESCBC)
+            .hmac_hash(SHA1())
+            .build(password.encode("utf-8"))
+        )
         p12.write(
             pkcs12.serialize_key_and_certificates(
                 b"server",
                 rsa_private_key,
                 cert,
                 None,
-                BestAvailableEncryption(password.encode("utf-8")),
+                encryption,
             )
         )
     created_files.append(pkcs12path)
