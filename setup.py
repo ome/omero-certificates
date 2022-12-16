@@ -20,7 +20,7 @@ setuptools.setup(
     setup_requires=["setuptools_scm"],
     install_requires=[
         "omero-py>=5.6.0",
-        "cryptography>=36.0.0",
+        "cryptography>=38.0.0",
     ],
     use_scm_version={"write_to": "omero_certificates/_version.py"},
     classifiers=[
