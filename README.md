@@ -10,12 +10,10 @@ If you prefer to configure OMERO manually see the examples in these documents:
 
 ## Installation
 
-Install `openssl` if it's not already on your system.
-Then activate your OMERO.server virtualenv and run:
+Activate your OMERO.server virtualenv and run:
 ```
 pip install omero-certificates
 ```
-
 
 ## Usage
 
@@ -26,11 +24,6 @@ Run:
 omero certificates
 ```
 ```
-OpenSSL 1.1.1d  10 Sep 2019
-Generating RSA private key, 2048 bit long modulus (2 primes)
-.+++++
-.............................+++++
-e is 65537 (0x010001)
 certificates created: /OMERO/certs/server.key /OMERO/certs/server.pem /OMERO/certs/server.p12
 ```
 to update your OMERO.server configuration and to generate or update your self-signed certificates.
@@ -47,16 +40,30 @@ The original values can be found on https://docs.openmicroscopy.org/omero/5.6.0/
 Certificates will be stored under `{omero.data.dir}/certs` by default.
 Set `omero.glacier2.IceSSL.DefaultDir` to change this.
 
-If you see a warning message such as
-```
-Can't load ./.rnd into RNG
-```
-it should be safe to ignore.
-
 For full information see the output of:
 ```
 omero certificates --help
 ```
+
+## Upgrading
+
+Since version 0.3.0 this plugin uses portable RFC 4514 (supercedes RFC 2253)
+formatted strings for the `omero.certificates.owner` configuration option.  If
+you have ran `omero certificates` before you may have OpenSSL command line
+formatted strings in your configuration that should be updated before you can
+run `omero certificates` again.  In most cases this means taking a string such
+as `/L=OMERO/O=OMERO.server` and reformatting it to
+`L=OMERO,O=OMERO.server`; remove the leading `/` and replace separator `/`'s
+with `,`'s.
+
+You can see the RFC 4514 compatible string for the `Issuer` and `Subject`
+of your existing certificate by running:
+```
+openssl x509 -in /path/to/cert.pem -text -nameopt rfc2253
+```
+
+You can review the RFC in full for more specific details:
+- https://tools.ietf.org/html/rfc4514.html
 
 ## Developer notes
 
