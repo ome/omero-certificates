@@ -79,6 +79,12 @@ def update_config(omerodir):
     protocols = "TLS1_2,TLS1_3"
     if is_rhel_7():
         # RHEL 7 shipped OpenSSL, version 1.0.2, only supports up to TLS 1.2
+        log.warn(
+            "Your Linux distribution has been detected as RHEL 7 which will "
+            "reach end of life in June 2024.  TLS 1.3 cannot be enabled and "
+            "upgrading is recommended.\nSee https://www.openmicroscopy.org/"
+            "2023/07/24/linux-distributions.html for more information."
+        )
         version_max = "TLS1_2"
         protocols = "TLS1_2"
     set_if_empty("omero.glacier2.IceSSL.DH.2048", "ffdhe2048.pem")
