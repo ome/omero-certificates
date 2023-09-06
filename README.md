@@ -39,8 +39,14 @@ You can now start your omero server as normal.
 
 This plugin automatically overrides the defaults for the following properties if they're not explicitly set:
 - `omero.glacier2.IceSSL.Ciphers=HIGH`: the default weaker ciphers may not be supported on some systems
-- `omero.glacier2.IceSSL.ProtocolVersionMax=TLS1_2`: Support TLS 1.1 and 1.2, not just 1.0
-- `omero.glacier2.IceSSL.Protocols=TLS1_0,TLS1_1,TLS1_2`: Support TLS 1.1 and 1.2, not just 1.0
+- `omero.glacier2.IceSSL.ProtocolVersionMax=TLS1_3`: Support TLS 1.2 and 1.3
+- `omero.glacier2.IceSSL.Protocols=TLS1_2,TLS1_3`: Support TLS 1.2 and 1.3
+- `omero.glacier2.IceSSL.DH.2048=ffdhe2048.pem`: use a pre-defined 2048-bit Diffie-Hellman group
+
+The pre-defined Diffie-Hellman group is from [RFC 7919](https://www.rfc-editor.org/rfc/rfc7919.txt).  Newer versions of OpenSSL will prefer ECDHE and have their own 2048-bit or greater primes but it's safe to use this one.
+When RHEL 7 (OpenSSL 1.0.2) support is dropped this will be removed.
+
+__NOTE:__ If RHEL 7 is detected, only TLS 1.2 support will be enabled.
 
 The original values can be found on https://docs.openmicroscopy.org/omero/5.6.0/sysadmins/config.html#glacier2
 
