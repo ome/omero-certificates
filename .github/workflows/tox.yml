@@ -29,3 +29,21 @@ jobs:
           echo "py=$py" >> $GITHUB_OUTPUT
       - name: Run tests
         run: tox -e py${{ steps.toxtarget.outputs.py }}
+  publish-pypi:
+    name: Pypi
+    if: startsWith(github.ref, 'refs/tags')
+    needs:
+      # Only publish if other jobs passed
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - name: Build package
+        run: |
+          python -mpip install wheel
+          python setup.py sdist bdist_wheel
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.3.0
+        with:
+          password: ${{ secrets.PYPI_PASSWORD }}
