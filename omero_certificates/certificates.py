@@ -132,8 +132,11 @@ def create_certificates(omerodir):
     #
     # See:
     #   * https://www.rfc-editor.org/rfc/rfc7919.txt
-    with open(grouppath, "w") as pem:
-        pem.write(FFDHE2048_PEM)
+    if os.path.exists(grouppath):
+        log.info("Using existing ffdhe2048.pem")
+    else:
+        with open(grouppath, "w") as pem:
+            pem.write(FFDHE2048_PEM)
 
     # Private key
     if os.path.exists(keypath):
