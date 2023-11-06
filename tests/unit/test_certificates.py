@@ -15,6 +15,39 @@ def get_config(omerodir):
         configxml.close()
 
 
+def check_pcks12_file(pcks12_file):
+    out = subprocess.check_output(
+        [
+            "openssl",
+            "pkcs12",
+            "-in",
+            pcks12_file,
+            "-passin",
+            "pass:secret",
+            "-passout",
+            "pass:secret",
+        ]
+    )
+    out = out.decode().splitlines()
+    for line in (
+        "subject=L = OMERO, O = OMERO.server, CN = localhost",
+        "issuer=L = OMERO, O = OMERO.server, CN = localhost",
+        "-----BEGIN CERTIFICATE-----",
+        "-----END CERTIFICATE-----",
+        "-----BEGIN ENCRYPTED PRIVATE KEY-----",
+        "-----END ENCRYPTED PRIVATE KEY-----",
+    ):
+        assert line in out
+
+
+def check_pem_file(pem_file):
+    with open(pem_file, "r") as pem:
+        assert (
+            sha256(pem.read().encode("ascii")).hexdigest()
+            == "2ef7758563185ad0dc1dbc38ab3a91647701e3ebee344fcf86b52e643bacb721"
+        )
+
+
 class TestCertificates(object):
     def test_config_from_empty(self, tmpdir):
         (tmpdir / "etc" / "grid").ensure(dir=True)
@@ -79,31 +112,47 @@ class TestCertificates(object):
         for filename in ("server.key", "server.p12", "server.pem", "ffdhe2048.pem"):
             assert os.path.isfile(os.path.join(datadir, "certs", filename))
 
-        with open(os.path.join(datadir, "certs", "ffdhe2048.pem")) as pem:
-            assert (
-                sha256(pem.read().encode("ascii")).hexdigest()
-                == "2ef7758563185ad0dc1dbc38ab3a91647701e3ebee344fcf86b52e643bacb721"
-            )
+        check_pem_file(os.path.join(datadir, "certs", "ffdhe2048.pem"))
+        check_pcks12_file(os.path.join(datadir, "certs", "server.p12"))
 
-        out = subprocess.check_output(
-            [
-                "openssl",
-                "pkcs12",
-                "-in",
-                os.path.join(datadir, "certs", "server.p12"),
-                "-passin",
-                "pass:secret",
-                "-passout",
-                "pass:secret",
-            ]
-        )
-        out = out.decode().splitlines()
-        for line in (
-            "subject=L = OMERO, O = OMERO.server, CN = localhost",
-            "issuer=L = OMERO, O = OMERO.server, CN = localhost",
-            "-----BEGIN CERTIFICATE-----",
-            "-----END CERTIFICATE-----",
-            "-----BEGIN ENCRYPTED PRIVATE KEY-----",
-            "-----END ENCRYPTED PRIVATE KEY-----",
-        ):
-            assert line in out
+    def test_reuse_pem(self, tmpdir):
+        (tmpdir / "etc" / "grid").ensure(dir=True)
+        omerodir = str(tmpdir)
+        datadir = str(tmpdir / "OMERO")
+        configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
+        configxml["omero.data.dir"] = datadir
+        configxml.close()
+
+        m = create_certificates(omerodir)
+        assert m.startswith("certificates created: ")
+        pem_file = os.path.join(datadir, "certs", "ffdhe2048.pem")
+        check_pem_file(pem_file)
+        timestamp = os.path.getmtime(pem_file)
+
+        # New invocation of create_certificates should not modify the PEM file
+        m = create_certificates(omerodir)
+        check_pem_file(pem_file)
+        assert os.path.getmtime(pem_file) == timestamp
+
+    def test_regen_pem(self, tmpdir):
+        (tmpdir / "etc" / "grid").ensure(dir=True)
+        omerodir = str(tmpdir)
+        datadir = str(tmpdir / "OMERO")
+        configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
+        configxml["omero.data.dir"] = datadir
+        configxml.close()
+
+        m = create_certificates(omerodir)
+        assert m.startswith("certificates created: ")
+        pem_file = os.path.join(datadir, "certs", "ffdhe2048.pem")
+        check_pem_file(pem_file)
+
+        # Manually modify the content of the PEM file
+        with open(pem_file, "w") as pem:
+            pem.write("test")
+        with open(pem_file, "r") as pem:
+            assert pem.read() == "test"
+
+        # New invocation of create_certificates should update the PEM file
+        m = create_certificates(omerodir)
+        check_pem_file(pem_file)
