@@ -1,3 +1,9 @@
+0.3.1 (November 2023)
+---------------------
+
+- Map contributors to use canonical real names and email addresses [#42](https://github.com/ome/omero-certificates/pull/42)
+- Use OpenSSL 3 pkcs12 defaults for forwards compatibility [#39](https://github.com/ome/omero-certificates/pull/39)
+
 0.3.0 (September 2023)
 ----------------------
 
