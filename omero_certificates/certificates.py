@@ -134,12 +134,13 @@ def create_certificates(omerodir):
     #   * https://www.rfc-editor.org/rfc/rfc7919.txt
     pem_exists = False
     if os.path.exists(grouppath):
-        log.info("Using existing ffdhe2048.pem")
         with open(grouppath, "r") as pem:
             if pem.read() == FFDHE2048_PEM:
+                log.info("Using existing ffdhe2048.pem")
                 pem_exists = True
     if not pem_exists:
         with open(grouppath, "w") as pem:
+            log.info("Creating PEM file with pre-defined DH group: %s", pem)
             pem.write(FFDHE2048_PEM)
 
     # Private key
