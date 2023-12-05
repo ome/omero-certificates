@@ -140,7 +140,7 @@ def create_certificates(omerodir):
                 pem_exists = True
     if not pem_exists:
         with open(grouppath, "w") as pem:
-            log.info("Creating PEM file with pre-defined DH group: %s", pem)
+            log.info("Creating PEM file with pre-defined DH group: %s", grouppath)
             pem.write(FFDHE2048_PEM)
 
     # Private key
