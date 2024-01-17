@@ -1,14 +1,12 @@
-# 0.3.1 (January 2024)
+# 0.3.2 (January 2024)
 
-## Bug fixes
-
-- Use OpenSSL 3 pkcs12 defaults for forwards compatibility [#39](https://github.com/ome/omero-certificates/pull/39)
 - Check whether ffdhe2048.pem exists before writing [#38](https://github.com/ome/omero-certificates/pull/38)
-
-## Other updates
-
-- Add top-level mailmap file [#42](https://github.com/ome/omero-certificates/pull/42)
 - GitHub actions improvements [#43](https://github.com/ome/omero-certificates/pull/43), [#45](https://github.com/ome/omero-certificates/pull/45)
+
+# 0.3.1 (November 2023)
+
+- Map contributors to use canonical real names and email addresses [#42](https://github.com/ome/omero-certificates/pull/42)
+- Use OpenSSL 3 pkcs12 defaults for forwards compatibility [#39](https://github.com/ome/omero-certificates/pull/39)
 
 # 0.3.0 (September 2023)
 
