@@ -8,7 +8,6 @@ import logging
 import os
 import subprocess
 import sys
-from distro import distro
 from omero.config import ConfigXml
 
 log = logging.getLogger(__name__)
@@ -42,13 +41,6 @@ ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
 -----END DH PARAMETERS-----"""
 
 
-def is_rhel_7():
-    major_version = distro.major_version(best=True)
-    if distro.id() in ("rhel", "centos") and major_version == "7":
-        return True
-    return False
-
-
 def update_config(omerodir):
     """
     Updates OMERO config with certificate properties if necessary
@@ -77,16 +69,6 @@ def update_config(omerodir):
         set_if_empty("omero.glacier2.IceSSL.Ciphers", "HIGH")
     version_max = "TLS1_3"
     protocols = "TLS1_2,TLS1_3"
-    if is_rhel_7():
-        # RHEL 7 shipped OpenSSL, version 1.0.2, only supports up to TLS 1.2
-        log.warn(
-            "Your Linux distribution has been detected as RHEL 7 which will "
-            "reach end of life in June 2024.  TLS 1.3 cannot be enabled and "
-            "upgrading is recommended.\nSee https://www.openmicroscopy.org/"
-            "2023/07/24/linux-distributions.html for more information."
-        )
-        version_max = "TLS1_2"
-        protocols = "TLS1_2"
     set_if_empty("omero.glacier2.IceSSL.DH.2048", "ffdhe2048.pem")
     set_if_empty("omero.glacier2.IceSSL.ProtocolVersionMax", version_max)
     set_if_empty("omero.glacier2.IceSSL.Protocols", protocols)
