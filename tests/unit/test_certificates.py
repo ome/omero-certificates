@@ -49,7 +49,7 @@ class TestCertificates(object):
         assert cfg == {
             "omero.glacier2.IceSSL.CAs": "server.pem",
             "omero.glacier2.IceSSL.CertFile": "server.p12",
-            "omero.glacier2.IceSSL.Ciphers": "HIGH",
+            "omero.glacier2.IceSSL.Ciphers": "HIGH!DHE",
             "omero.glacier2.IceSSL.DefaultDir": "/OMERO/certs",
             "omero.glacier2.IceSSL.Password": "secret",
             "omero.glacier2.IceSSL.ProtocolVersionMax": "TLS1_3",
@@ -73,7 +73,7 @@ class TestCertificates(object):
         assert cfg == {
             "omero.glacier2.IceSSL.CAs": "server.pem",
             "omero.glacier2.IceSSL.CertFile": "server.p12",
-            "omero.glacier2.IceSSL.Ciphers": "HIGH",
+            "omero.glacier2.IceSSL.Ciphers": "HIGH!DHE",
             "omero.glacier2.IceSSL.DefaultDir": "/OMERO/certs",
             "omero.glacier2.IceSSL.Password": "secret",
             "omero.glacier2.IceSSL.ProtocolVersionMax": "TLS1_3",

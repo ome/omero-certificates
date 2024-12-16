@@ -38,7 +38,7 @@ def update_config(omerodir):
     set_if_empty("omero.glacier2.IceSSL.Password", "secret")
 
     if sys.platform != "darwin":
-        set_if_empty("omero.glacier2.IceSSL.Ciphers", "HIGH")
+        set_if_empty("omero.glacier2.IceSSL.Ciphers", "HIGH!DHE")
     version_max = "TLS1_3"
     protocols = "TLS1_2,TLS1_3"
     set_if_empty("omero.glacier2.IceSSL.ProtocolVersionMax", version_max)
