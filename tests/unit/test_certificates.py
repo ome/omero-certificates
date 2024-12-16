@@ -62,8 +62,7 @@ class TestCertificates(object):
     def test_config_keep_existing(self, tmpdir):
         (tmpdir / "etc" / "grid").ensure(dir=True)
         omerodir = str(tmpdir)
-        configxml = ConfigXml(os.path.join(omerodir,
-                              "etc", "grid", "config.xml"))
+        configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
         configxml["omero.certificates.commonname"] = "omero.example.org"
         configxml["omero.certificates.owner"] = "/L=universe/O=42"
         configxml.close()
@@ -88,8 +87,7 @@ class TestCertificates(object):
         (tmpdir / "etc" / "grid").ensure(dir=True)
         omerodir = str(tmpdir)
         datadir = str(tmpdir / "OMERO")
-        configxml = ConfigXml(os.path.join(omerodir,
-                                           "etc", "grid", "config.xml"))
+        configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
         configxml["omero.data.dir"] = datadir
         configxml.close()
 
@@ -109,8 +107,7 @@ class TestCertificates(object):
         (tmpdir / "etc" / "grid").ensure(dir=True)
         omerodir = str(tmpdir)
         datadir = str(tmpdir / "OMERO")
-        configxml = ConfigXml(os.path.join(omerodir,
-                                           "etc", "grid", "config.xml"))
+        configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
         configxml["omero.data.dir"] = datadir
         configxml.close()
 
@@ -121,8 +118,7 @@ class TestCertificates(object):
         (tmpdir / "etc" / "grid").ensure(dir=True)
         omerodir = str(tmpdir)
         datadir = str(tmpdir / "OMERO")
-        configxml = ConfigXml(os.path.join(omerodir,
-                                           "etc", "grid", "config.xml"))
+        configxml = ConfigXml(os.path.join(omerodir, "etc", "grid", "config.xml"))
         configxml["omero.data.dir"] = datadir
         configxml.close()
 
