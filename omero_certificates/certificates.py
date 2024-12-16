@@ -62,7 +62,8 @@ def create_certificates(omerodir):
     cn = cfgmap["omero.certificates.commonname"]
     owner = cfgmap["omero.certificates.owner"]
     days = "365"
-    pkcs12path = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CertFile"])
+    pkcs12path = os.path.join(certdir,
+                              cfgmap["omero.glacier2.IceSSL.CertFile"])
     keypath = os.path.join(certdir, cfgmap["omero.certificates.key"])
     certpath = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CAs"])
     password = cfgmap["omero.glacier2.IceSSL.Password"]
