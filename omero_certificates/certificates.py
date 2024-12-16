@@ -13,34 +13,6 @@ from omero.config import ConfigXml
 log = logging.getLogger(__name__)
 
 
-# ffdhe2048 group from RFC 7919 in PEM format
-# SHA256(ffdhe2048.txt)=
-#   2ef7758563185ad0dc1dbc38ab3a91647701e3ebee344fcf86b52e643bacb721
-#
-# The prime can be validated with OpenSSL:
-#   openssl dhparam -in ffdhe2048.txt -check -text
-#
-# On newer versions of OpenSSL, this will print out that the group has
-# been detected as "ffdhe2048":
-#
-# ...
-#    DH Parameters: (2048 bit)
-#    GROUP: ffdhe2048
-# DH parameters appear to be ok.
-# ...
-#
-# See:
-#  * https://datatracker.ietf.org/doc/html/rfc7919#autoid-31
-FFDHE2048_PEM = """-----BEGIN DH PARAMETERS-----
-MIIBCAKCAQEA//////////+t+FRYortKmq/cViAnPTzx2LnFg84tNpWp4TZBFGQz
-+8yTnc4kmz75fS/jY2MMddj2gbICrsRhetPfHtXV/WVhJDP1H18GbtCFY2VVPe0a
-87VXE15/V8k1mE8McODmi3fipona8+/och3xWKE2rec1MKzKT0g6eXq8CrGCsyT7
-YdEIqUuyyOP7uWrat2DX9GgdT0Kj3jlN9K5W7edjcrsZCwenyO4KbXCeAvzhzffi
-7MA0BM0oNC9hkXL+nOmFg/+OTxIy7vKBg8P+OxtMb61zO7X8vC7CIAXFjvGDfRaD
-ssbzSibBsu/6iGtCOGEoXJf//////////wIBAg==
------END DH PARAMETERS-----"""
-
-
 def update_config(omerodir):
     """
     Updates OMERO config with certificate properties if necessary
@@ -69,7 +41,6 @@ def update_config(omerodir):
         set_if_empty("omero.glacier2.IceSSL.Ciphers", "HIGH")
     version_max = "TLS1_3"
     protocols = "TLS1_2,TLS1_3"
-    set_if_empty("omero.glacier2.IceSSL.DH.2048", "ffdhe2048.pem")
     set_if_empty("omero.glacier2.IceSSL.ProtocolVersionMax", version_max)
     set_if_empty("omero.glacier2.IceSSL.Protocols", protocols)
 
@@ -94,7 +65,6 @@ def create_certificates(omerodir):
     pkcs12path = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CertFile"])
     keypath = os.path.join(certdir, cfgmap["omero.certificates.key"])
     certpath = os.path.join(certdir, cfgmap["omero.glacier2.IceSSL.CAs"])
-    grouppath = os.path.join(certdir, "ffdhe2048.pem")
     password = cfgmap["omero.glacier2.IceSSL.Password"]
 
     try:
@@ -106,24 +76,6 @@ def create_certificates(omerodir):
 
     os.makedirs(certdir, exist_ok=True)
     created_files = []
-
-    # Use pre-defined Diffie-Hellman group from RFC 7919.  Newer versions
-    # of OpenSSL will prefer ECDHE and have their own 2048-bit or greater
-    # primes but it's safe to use this one.  When RHEL 7 (OpenSSL 1.0.2)
-    # support is dropped this can be removed.
-    #
-    # See:
-    #   * https://www.rfc-editor.org/rfc/rfc7919.txt
-    pem_exists = False
-    if os.path.exists(grouppath):
-        with open(grouppath, "r") as pem:
-            if pem.read() == FFDHE2048_PEM:
-                log.info("Using existing ffdhe2048.pem")
-                pem_exists = True
-    if not pem_exists:
-        with open(grouppath, "w") as pem:
-            log.info("Creating PEM file with pre-defined DH group: %s", grouppath)
-            pem.write(FFDHE2048_PEM)
 
     # Private key
     if os.path.exists(keypath):

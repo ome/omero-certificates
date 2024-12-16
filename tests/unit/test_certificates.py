@@ -40,14 +40,6 @@ def check_pcks12_file(pcks12_file):
         assert line in out
 
 
-def check_pem_file(pem_file):
-    with open(pem_file, "r") as pem:
-        assert (
-            sha256(pem.read().encode("ascii")).hexdigest()
-            == "2ef7758563185ad0dc1dbc38ab3a91647701e3ebee344fcf86b52e643bacb721"
-        )
-
-
 class TestCertificates(object):
     def test_config_from_empty(self, tmpdir):
         (tmpdir / "etc" / "grid").ensure(dir=True)
@@ -60,7 +52,6 @@ class TestCertificates(object):
             "omero.glacier2.IceSSL.CAs": "server.pem",
             "omero.glacier2.IceSSL.CertFile": "server.p12",
             "omero.glacier2.IceSSL.Ciphers": "HIGH",
-            "omero.glacier2.IceSSL.DH.2048": "ffdhe2048.pem",
             "omero.glacier2.IceSSL.DefaultDir": "/OMERO/certs",
             "omero.glacier2.IceSSL.Password": "secret",
             "omero.glacier2.IceSSL.ProtocolVersionMax": "TLS1_3",
@@ -85,7 +76,6 @@ class TestCertificates(object):
             "omero.glacier2.IceSSL.CAs": "server.pem",
             "omero.glacier2.IceSSL.CertFile": "server.p12",
             "omero.glacier2.IceSSL.Ciphers": "HIGH",
-            "omero.glacier2.IceSSL.DH.2048": "ffdhe2048.pem",
             "omero.glacier2.IceSSL.DefaultDir": "/OMERO/certs",
             "omero.glacier2.IceSSL.Password": "secret",
             "omero.glacier2.IceSSL.ProtocolVersionMax": "TLS1_3",
@@ -109,10 +99,9 @@ class TestCertificates(object):
         cfg = get_config(omerodir)
         assert cfg["omero.glacier2.IceSSL.DefaultDir"] == os.path.join(datadir, "certs")
 
-        for filename in ("server.key", "server.p12", "server.pem", "ffdhe2048.pem"):
+        for filename in ("server.key", "server.p12", "server.pem"):
             assert os.path.isfile(os.path.join(datadir, "certs", filename))
 
-        check_pem_file(os.path.join(datadir, "certs", "ffdhe2048.pem"))
         check_pcks12_file(os.path.join(datadir, "certs", "server.p12"))
 
     def test_reuse_pem(self, tmpdir):
@@ -125,14 +114,6 @@ class TestCertificates(object):
 
         m = create_certificates(omerodir)
         assert m.startswith("certificates created: ")
-        pem_file = os.path.join(datadir, "certs", "ffdhe2048.pem")
-        check_pem_file(pem_file)
-        timestamp = os.path.getmtime(pem_file)
-
-        # New invocation of create_certificates should not modify the PEM file
-        m = create_certificates(omerodir)
-        check_pem_file(pem_file)
-        assert os.path.getmtime(pem_file) == timestamp
 
     def test_regen_pem(self, tmpdir):
         (tmpdir / "etc" / "grid").ensure(dir=True)
@@ -144,15 +125,3 @@ class TestCertificates(object):
 
         m = create_certificates(omerodir)
         assert m.startswith("certificates created: ")
-        pem_file = os.path.join(datadir, "certs", "ffdhe2048.pem")
-        check_pem_file(pem_file)
-
-        # Manually modify the content of the PEM file
-        with open(pem_file, "w") as pem:
-            pem.write("test")
-        with open(pem_file, "r") as pem:
-            assert pem.read() == "test"
-
-        # New invocation of create_certificates should update the PEM file
-        m = create_certificates(omerodir)
-        check_pem_file(pem_file)
