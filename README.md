@@ -38,7 +38,7 @@ If you already have the necessary configuration settings this plugin will not mo
 You can now start your omero server as normal.
 
 This plugin automatically overrides the defaults for the following properties if they're not explicitly set:
-- `omero.glacier2.IceSSL.Ciphers=HIGH`: the default weaker ciphers may not be supported on some systems
+- `omero.glacier2.IceSSL.Ciphers=HIGH!DHE`: the default weaker ciphers may not be supported on some systems
 - `omero.glacier2.IceSSL.ProtocolVersionMax=TLS1_3`: Support TLS 1.2 and 1.3
 - `omero.glacier2.IceSSL.Protocols=TLS1_2,TLS1_3`: Support TLS 1.2 and 1.3
 
