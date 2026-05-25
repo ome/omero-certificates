@@ -6,7 +6,6 @@ OMERO server certificate management plugin
 
 import setuptools
 
-
 setuptools.setup(
     name="omero-certificates",
     author="The Open Microscopy Team",
